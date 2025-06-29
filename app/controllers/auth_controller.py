@@ -30,14 +30,28 @@ def login_user():
 
 
 def register_user():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    hashed_pw = hashlib.sha1(password.encode()).hexdigest()
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not all([first_name, last_name, email, password]):
+        return jsonify({"error": "All fields are required"}), 400
 
     if mongo.db.users.find_one({'email': email}):
-        flash('Email already registered')
-        return redirect(url_for('auth.signup'))
+        return jsonify({"error": "Email already exists"}), 400
 
-    mongo.db.users.insert_one({'email': email, 'password': hashed_pw})
-    flash('Account created')
-    return redirect(url_for('auth.login'))
+    hashed_pw = hashlib.sha1(password.encode()).hexdigest()
+
+    mongo.db.users.insert_one({
+        'first_name': first_name,
+        'last_name': last_name,
+        'email': email,
+        'password': hashed_pw
+    })
+
+    return jsonify({"message": "User registered successfully"}), 201
