@@ -2,6 +2,8 @@ from flask import request, redirect, url_for, flash, session, jsonify
 from app.utils.db import mongo
 import hashlib
 
+from app.utils.helper import generate_token
+
 
 def login_user():
     try:
@@ -17,12 +19,11 @@ def login_user():
 
         hashed_pw = hashlib.sha1(password.encode()).hexdigest()
         user = mongo.db.users.find_one({'email': email, 'password': hashed_pw})
+        if not user:
+            return jsonify({'error': 'Invalid credentials'}), 401
 
-        if user:
-            session['user_id'] = str(user['_id'])
-            return jsonify({"message": "Login successful"}), 200
-        else:
-            return jsonify({"error": "Invalid credentials"}), 401
+        token = generate_token(str(user['_id']))
+        return jsonify({'token': token}), 200
 
     except Exception as e:
         print(f"Login error: {e}")
