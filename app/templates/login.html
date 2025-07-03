@@ -71,12 +71,15 @@
       <button type="submit">Login</button>
     </form>
     <div class="signup-link">
-      <p>Don't have an account? <a href="/signup">Click here</a></p>
+      <p>Don't have an account? <a href="{{ url_for('auth.signup') }}">Click here</a></p>
     </div>
     <div id="message" style="color: red; text-align: center; margin-top: 1rem;"></div>
   </div>
 
   <script>
+    const loginUrl = "{{ url_for('auth.login') }}";
+    const home = "{{ url_for('main.home') }}";
+
     const form = document.getElementById('login-form');
     const message = document.getElementById('message');
 
@@ -86,7 +89,7 @@
       const password = document.getElementById('password').value;
 
       try {
-        const response = await fetch('http://localhost:5000/login', {
+        const response = await fetch(loginUrl, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -94,15 +97,31 @@
   credentials: 'include',
   body: JSON.stringify({ email, password }),
 });
+const result = await response.json();
 
+if (response.ok) {
+  message.style.color = 'green';
+  message.textContent = 'Login successful!';
+  console.log(result);
 
-        const result = await response.json();
+  localStorage.setItem('token', result.token);
 
-        if (response.ok) {
-          message.style.color = 'green';
-          message.textContent = 'Login successful!';
-          // Optionally redirect
-          // window.location.href = '/dashboard';
+  fetch(home, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${result.token}`
+    }
+  })
+  .then(() => {
+    console.log("Redirecting to home...");
+    window.location.href = home;
+  })
+  .catch(err => {
+    console.error('Authorization failed:', err);
+    message.style.color = 'red';
+    message.textContent = 'Unauthorized access';
+  });
+
         } else {
           message.style.color = 'red';
           message.textContent = result.error || 'Login failed';

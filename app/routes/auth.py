@@ -6,7 +6,6 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    print("inside login")
     if request.method == 'POST':
         return login_user()
     return render_template('login.html')
@@ -14,6 +13,7 @@ def login():
 
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
+    print("inside signup")
     if request.method == 'POST':
         return register_user()
     return render_template('signup.html')

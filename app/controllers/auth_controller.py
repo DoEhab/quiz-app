@@ -23,6 +23,7 @@ def login_user():
             return jsonify({'error': 'Invalid credentials'}), 401
 
         token = generate_token(str(user['_id']))
+        print(token)
         return jsonify({'token': token}), 200
 
     except Exception as e:
