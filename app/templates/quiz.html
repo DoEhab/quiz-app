@@ -46,8 +46,13 @@
                   <input type="radio" name="q${index}" value="${opt}" required /> ${opt}
                 </label>
               </li>
+
             `).join('')}
+           <label>
+               <div id="correct-answer-${index}"></div>
+           </label>
           </ul>
+
         `;
         container.appendChild(questionBlock);
       });
@@ -65,11 +70,15 @@
       let score = 0;
       correctAnswers.forEach((ans, index) => {
         const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        console.log(ans);
         if (selected && selected.value === ans) {
           score += 1;
         }
-      });
+        document.getElementById(`correct-answer-${index}`).textContent = `The correct answer: ${ans}`;
+        const answerDiv = document.getElementById(`correct-answer-${index}`);
+        answerDiv.style.color = selected?.value === ans ? 'green' : 'red';
 
+      });
       const total = correctAnswers.length;
       document.getElementById('result').textContent = `You scored ${score} out of ${total}`;
     });
