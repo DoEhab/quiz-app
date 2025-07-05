@@ -1,6 +1,7 @@
 from bson import ObjectId
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, request
 
+from app.controllers.quiz_controller import get_quiz_q, submit_quiz_answers
 from app.utils.db import mongo
 from app.utils.helper import token_required
 
@@ -30,13 +31,10 @@ def quiz_page(quiz_id):
 @main.route('/api/quiz/<quiz_id>', methods=['GET'])
 @token_required
 def get_quiz(quiz_id):
-    quiz = mongo.db.quizzes.find_one({'_id': ObjectId(quiz_id)})
-    if not quiz:
-        return jsonify({'error': 'Quiz not found'}), 404
+    return get_quiz_q(quiz_id)
 
-    quiz['_id'] = str(quiz['_id'])
-    return jsonify({
-        'title': quiz['title'],
-        'topic': quiz['topic'],
-        'questions': quiz['questions']
-    }), 200
+
+@main.route('/api/submit-quiz', methods=['POST'])
+@token_required
+def submit_quiz():
+    return submit_quiz_answers()

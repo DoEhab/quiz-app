@@ -1,5 +1,6 @@
 from flask_cors import CORS
 
+from app.controllers.quiz_controller import quiz
 from app.utils.db import init_db
 from app.routes.routes import main
 from app.routes.auth import auth
@@ -12,5 +13,6 @@ def create_app():
     CORS(app, supports_credentials=True, origins=["http://localhost:63342"])
     app.register_blueprint(main)
     app.register_blueprint(auth)
+    app.register_blueprint(quiz)
     init_db(app)
     return app

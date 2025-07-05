@@ -9,6 +9,8 @@
   <div class="container">
     <h2 id="quiz-title">Loading...</h2>
     <form id="quiz-form">
+      <div id="timer">Time Left: 60s</div>
+
       <div id="questions-container"></div>
       <button type="submit" class="start-btn">Submit Answers</button>
     </form>
@@ -19,6 +21,20 @@
     const token = localStorage.getItem('token');
     const quizId = window.location.pathname.split('/').pop();
     let correctAnswers = [];
+    const answers = [];
+    let timeLeft = 60; // seconds
+const timerElement = document.getElementById('timer');
+
+const countdown = setInterval(() => {
+  timeLeft--;
+  timerElement.textContent = `Time Left: ${timeLeft}s`;
+
+  if (timeLeft <= 0) {
+    clearInterval(countdown);
+    timerElement.textContent = "Time's up!";
+    form.requestSubmit(); // auto-submit the form
+  }
+}, 1000);
 
     fetch(`/api/quiz/${quizId}`, {
       headers: {
@@ -43,16 +59,14 @@
             ${q.options.map(opt => `
               <li>
                 <label>
-                  <input type="radio" name="q${index}" value="${opt}" required /> ${opt}
+                  <input type="radio" name="q${index}" value="${opt}"/> ${opt}
                 </label>
               </li>
-
             `).join('')}
            <label>
                <div id="correct-answer-${index}"></div>
            </label>
           </ul>
-
         `;
         container.appendChild(questionBlock);
       });
@@ -69,19 +83,49 @@
 
       let score = 0;
       correctAnswers.forEach((ans, index) => {
-        const selected = document.querySelector(`input[name="q${index}"]:checked`);
-        console.log(ans);
-        if (selected && selected.value === ans) {
+      const selected = document.querySelector(`input[name="q${index}"]:checked`);
+
+      const userAnswer = selected ? selected.value : null;
+      answers.push(userAnswer);
+        if (userAnswer === ans) {
           score += 1;
         }
+
         document.getElementById(`correct-answer-${index}`).textContent = `The correct answer: ${ans}`;
         const answerDiv = document.getElementById(`correct-answer-${index}`);
         answerDiv.style.color = selected?.value === ans ? 'green' : 'red';
-
       });
+            const payload = {
+      quizId: quizId,
+      answers: answers,
+      score: score,
+      total: correctAnswers.length
+    };
+
+    fetch('/api/submit-quiz', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log('Submission successful:', data);
+
+      document.getElementById('result').textContent = `You scored ${score} out of ${correctAnswers.length}`;
+    })
+    .catch(err => {
+      console.error('Submission error:', err);
+      alert('There was a problem submitting your answers.');
+    });
+
       const total = correctAnswers.length;
       document.getElementById('result').textContent = `You scored ${score} out of ${total}`;
+
     });
+
   </script>
 </body>
 </html>
