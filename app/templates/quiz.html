@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2 id="quiz-title">Loading...</h2>
+    <form id="quiz-form">
+      <div id="questions-container"></div>
+      <button type="submit" class="start-btn">Submit Answers</button>
+    </form>
+    <div id="result" style="margin-top: 1rem; font-weight: bold;"></div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const quizId = window.location.pathname.split('/').pop();
+    let correctAnswers = [];
+
+    fetch(`/api/quiz/${quizId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Unauthorized');
+      return res.json();
+    })
+    .then(data => {
+      document.getElementById('quiz-title').textContent = data.title;
+
+      const container = document.getElementById('questions-container');
+      correctAnswers = data.questions.map(q => q.answer);  // Save correct answers
+
+      data.questions.forEach((q, index) => {
+        const questionBlock = document.createElement('div');
+        questionBlock.innerHTML = `
+          <h4>Q${index + 1}: ${q.question}</h4>
+          <ul>
+            ${q.options.map(opt => `
+              <li>
+                <label>
+                  <input type="radio" name="q${index}" value="${opt}" required /> ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+        `;
+        container.appendChild(questionBlock);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      window.location.href = '/login';
+    });
+
+    // Handle form submission
+    const form = document.getElementById('quiz-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      let score = 0;
+      correctAnswers.forEach((ans, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        if (selected && selected.value === ans) {
+          score += 1;
+        }
+      });
+
+      const total = correctAnswers.length;
+      document.getElementById('result').textContent = `You scored ${score} out of ${total}`;
+    });
+  </script>
+</body>
+</html>

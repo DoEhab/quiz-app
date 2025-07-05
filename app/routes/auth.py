@@ -13,7 +13,6 @@ def login():
 
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
-    print("inside signup")
     if request.method == 'POST':
         return register_user()
     return render_template('signup.html')
