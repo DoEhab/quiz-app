@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Available Quizzes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
@@ -27,19 +28,31 @@
       return res.json();
     })
     .then(data => {
-      const list = document.getElementById('quiz-list');
-      data.forEach(quiz => {
-        const card = document.createElement('div');
-       card.classList.add('quiz-card');
+  const list = document.getElementById('quiz-list');
+  data.forEach(quiz => {
+    const card = document.createElement('div');
+    card.classList.add('quiz-card');
 
-        card.innerHTML = `
-          <div class="quiz-title">${quiz.title}</div>
-          <div class="quiz-topic">Topic: ${quiz.topic}</div>
-          <a href="/quiz/${quiz._id}" class="start-btn">Start Quiz</a>
-        `;
-        list.appendChild(card);
-      });
-    })
+    const scoreText = quiz.score !== null
+  ? `Score: ${quiz.score}/${quiz.total} • ${quiz.date}`
+  : `Not taken yet`;
+
+card.innerHTML = `
+  <div class="quiz-header">
+    <div>
+      <div class="quiz-title">${quiz.title}</div>
+      <div class="quiz-topic">${quiz.topic}</div>
+    </div>
+    <div class="quiz-meta">${scoreText}</div>
+  </div>
+  <a href="/quiz/${quiz._id}" class="start-btn">Start Quiz</a>
+`;
+
+
+    list.appendChild(card);
+  });
+})
+
     .catch(err => {
       console.error('Error fetching quizzes:', err);
       window.location.href = loginUrl;

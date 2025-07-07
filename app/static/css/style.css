@@ -44,11 +44,30 @@ h2 {
   color: #2c3e50;
 }
 
-.quiz-topic {
-  color: #888;
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
+
+.quiz-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.quiz-topic {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.quiz-meta {
+  font-size: 0.85rem;
+  color: #555;
+  text-align: right;
+}
+
 
 .start-btn {
   display: inline-block;
@@ -114,3 +133,54 @@ h2 {
   font-size: 1.2rem;
   color: #e74c3c;
 }
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+@media (max-width: 600px) {
+  body {
+    padding: 0 0.5rem;
+  }
+  .container,
+  .quiz-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .quiz-list {
+    grid-template-columns: 1fr; /* stack cards vertically */
+  }
+
+  .quiz-card {
+    padding: 1rem;
+  }
+
+  .quiz-title {
+    font-size: 1rem;
+  }
+
+  .quiz-topic,
+  .quiz-meta {
+    font-size: 0.85rem;
+  }
+
+  .start-btn,
+  .submit-btn {
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  #timer {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+}
+

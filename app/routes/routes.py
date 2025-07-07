@@ -1,7 +1,7 @@
 from bson import ObjectId
 from flask import Blueprint, render_template, jsonify, request
 
-from app.controllers.quiz_controller import get_quiz_q, submit_quiz_answers
+from app.controllers.quiz_controller import get_quiz_q, submit_quiz_answers, get_all_quizzes
 from app.utils.db import mongo
 from app.utils.helper import token_required
 
@@ -17,10 +17,7 @@ def home():
 @main.route('/quizzes', methods=['GET'])
 @token_required
 def get_quizzes():
-    quizzes = list(mongo.db.quizzes.find({}, {'title': 1, 'topic': 1}))  # select fields only
-    for quiz in quizzes:
-        quiz['_id'] = str(quiz['_id'])  # convert ObjectId to string
-    return jsonify(quizzes), 200
+    return get_all_quizzes()
 
 
 @main.route('/quiz/<quiz_id>')

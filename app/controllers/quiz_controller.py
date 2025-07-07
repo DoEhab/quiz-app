@@ -7,6 +7,30 @@ from app.utils.helper import token_required
 quiz = Blueprint('quiz', __name__)
 
 
+@quiz.route('/quizzes', methods=['GET'])
+@token_required
+def get_all_quizzes():
+    user_id = request.user_id
+    quizzes = list(mongo.db.quizzes.find({}, {'title': 1, 'topic': 1}))
+
+    for quiz_data in quizzes:
+        quiz_data['_id'] = str(quiz_data['_id'])
+        submission = mongo.db.submissions.find_one(
+            {'user_id': user_id, 'quiz_id': quiz_data['_id']},
+            sort=[('_id', -1)]
+        )
+        if submission:
+            quiz_data['score'] = submission['score']
+            quiz_data['total'] = submission['total']
+            quiz_data['date'] = submission['_id'].generation_time.strftime('%Y-%m-%d %H:%M')
+        else:
+            quiz_data['score'] = None
+            quiz_data['total'] = None
+            quiz_data['date'] = None
+
+    return jsonify(quizzes), 200
+
+
 @quiz.route('/api/quiz/<quiz_id>', methods=['GET'])
 @token_required
 def get_quiz_q(quiz_id):

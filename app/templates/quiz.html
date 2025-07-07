@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -13,6 +15,8 @@
 
       <div id="questions-container"></div>
       <button type="submit" class="start-btn">Submit Answers</button>
+      <button type="button" id="home-btn" class="start-btn">Home Screen</button>
+
     </form>
     <div id="result" style="margin-top: 1rem; font-weight: bold;"></div>
   </div>
@@ -23,9 +27,11 @@
     let correctAnswers = [];
     const answers = [];
     let timeLeft = 60; // seconds
-const timerElement = document.getElementById('timer');
-
-const countdown = setInterval(() => {
+    const timerElement = document.getElementById('timer');
+    document.getElementById('home-btn').addEventListener('click', () => {
+    window.location.href = '/';
+});
+  const countdown = setInterval(() => {
   timeLeft--;
   timerElement.textContent = `Time Left: ${timeLeft}s`;
 
@@ -78,8 +84,14 @@ const countdown = setInterval(() => {
 
     // Handle form submission
     const form = document.getElementById('quiz-form');
+    const submitButton = form.querySelector('button[type="submit"]');
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitted';
+      timeLeft = 0;
 
       let score = 0;
       correctAnswers.forEach((ans, index) => {
@@ -95,7 +107,8 @@ const countdown = setInterval(() => {
         const answerDiv = document.getElementById(`correct-answer-${index}`);
         answerDiv.style.color = selected?.value === ans ? 'green' : 'red';
       });
-            const payload = {
+
+    const payload = {
       quizId: quizId,
       answers: answers,
       score: score,
@@ -123,7 +136,6 @@ const countdown = setInterval(() => {
 
       const total = correctAnswers.length;
       document.getElementById('result').textContent = `You scored ${score} out of ${total}`;
-
     });
 
   </script>
