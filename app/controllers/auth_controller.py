@@ -4,8 +4,16 @@ import hashlib
 
 from app.utils.helper import generate_token
 
+"""
+This file contains all authentication logic
+"""
+
 
 def login_user():
+    """
+    Handles the login logic
+    :return: json response and status code
+    """
     try:
         data = request.get_json()
         if not data:
@@ -32,6 +40,10 @@ def login_user():
 
 
 def register_user():
+    """
+    new account logic
+    :return: json response and status code
+    """
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON data"}), 400

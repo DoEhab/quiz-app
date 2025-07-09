@@ -3,13 +3,19 @@ from flask import jsonify, request, Blueprint
 
 from app.utils.db import mongo
 from app.utils.helper import token_required
-
+"""
+This file has all quiz logic
+"""
 quiz = Blueprint('quiz', __name__)
 
 
 @quiz.route('/quizzes', methods=['GET'])
 @token_required
 def get_all_quizzes():
+    """
+    list of all quizzes
+    :return: list of quizzes with its data
+    """
     user_id = request.user_id
     quizzes = list(mongo.db.quizzes.find({}, {'title': 1, 'topic': 1}))
 
@@ -34,6 +40,11 @@ def get_all_quizzes():
 @quiz.route('/api/quiz/<quiz_id>', methods=['GET'])
 @token_required
 def get_quiz_q(quiz_id):
+    """
+    get the quiz questions
+    :param quiz_id: the id of the selected quiz
+    :return: quiz title, topic and questions
+    """
     quiz_data = mongo.db.quizzes.find_one({'_id': ObjectId(quiz_id)})
     if not quiz:
         return jsonify({'error': 'Quiz not found'}), 404
@@ -49,6 +60,10 @@ def get_quiz_q(quiz_id):
 @quiz.route('/api/submit-quiz', methods=['POST'])
 @token_required
 def submit_quiz_answers():
+    """
+    submits the selected answers
+    :return: scores and correct answer
+    """
     data = request.get_json()
     quiz_id = data.get('quizId')
     answers = data.get('answers')
