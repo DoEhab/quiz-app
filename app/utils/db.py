@@ -1,11 +1,11 @@
 import os
 from dotenv import load_dotenv
 from flask_pymongo import PyMongo
-
+"""
+database initialization
+"""
 load_dotenv()
-
 mongo = PyMongo()
-
 secret_key = os.getenv("SECRET_KEY", "default_key")
 
 

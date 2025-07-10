@@ -29,14 +29,17 @@ Built with **Flask**, **MongoDB**, and vanilla **HTML/CSS/JavaScript**.
 5. **Open in browser**
     http://localhost:5000/
 
-6. **Project Structure**app/
+6. **Project Structure**
+
+    app/
  ├── controllers/     # Controllers for business logic
  ├── routes/          # Flask route blueprints
  ├── templates/       # HTML templates
  └── static/          # CSS and JavaScript files
 utils/                # Helper functions and DB config
 
-
+7. **License**
+ Educational use.
 
 
 
