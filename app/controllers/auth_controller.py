@@ -1,8 +1,8 @@
-from flask import request, redirect, url_for, flash, session, jsonify
-from app.utils.db import mongo
-import hashlib
+from flask import request, jsonify
 
-from app.utils.helper import generate_token
+from app.models import get_user_by_email, create_user
+from app.utils.db import mongo
+from app.utils.helper import generate_token, hash_pass
 
 """
 This file contains all authentication logic
@@ -25,10 +25,10 @@ def login_user():
         if not email or not password:
             return jsonify({"error": "Email and password are required"}), 400
 
-        hashed_pw = hashlib.sha1(password.encode()).hexdigest()
-        user = mongo.db.users.find_one({'email': email, 'password': hashed_pw})
+        hashed_pw = hash_pass(password)
+        user = get_user_by_email(email, hashed_pw)
         if not user:
-            return jsonify({'error': 'Invalid credentials'}), 401
+            return jsonify({'error': 'This account doesn\'t exist'}), 401
 
         token = generate_token(str(user['_id']))
         print(token)
@@ -59,13 +59,11 @@ def register_user():
     if mongo.db.users.find_one({'email': email}):
         return jsonify({"error": "Email already exists"}), 400
 
-    hashed_pw = hashlib.sha1(password.encode()).hexdigest()
+    hashed_pw = hash_pass(password)
 
-    mongo.db.users.insert_one({
-        'first_name': first_name,
-        'last_name': last_name,
-        'email': email,
-        'password': hashed_pw
-    })
-
-    return jsonify({"message": "User registered successfully"}), 201
+    try:
+        create_user(first_name, last_name, email, hashed_pw)
+        return jsonify({"message": "User registered successfully"}), 201
+    except Exception as e:
+        print(f"Error creating user: {e}")
+        return jsonify({"error": "An error occurred while registering user"}), 500

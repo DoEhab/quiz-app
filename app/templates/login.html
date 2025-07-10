@@ -3,65 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <title>Login - Quiz App</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .login-container {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    h2 {
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    .signup-link {
-      text-align: center;
-      margin-top: 1rem;
-    }
-    .signup-link a {
-      color: #3498db;
-      text-decoration: none;
-    }
-    .signup-link a:hover {
-      text-decoration: underline;
-    }
-  </style>
+
 </head>
-<body>
+<body class="auth-page">
 
   <div class="login-container">
     <h2>ALX Quiz Web App</h2>
@@ -80,58 +26,57 @@
   <script>
     const loginUrl = "{{ url_for('auth.login') }}";
     const home = "{{ url_for('main.home') }}";
-
     const form = document.getElementById('login-form');
     const message = document.getElementById('message');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
 
-      try {
-        const response = await fetch(loginUrl, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include',
-  body: JSON.stringify({ email, password }),
-});
-const result = await response.json();
+        try {
+          const response = await fetch(loginUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email, password }),
+          });
+          const result = await response.json();
 
-if (response.ok) {
-  message.style.color = 'green';
-  message.textContent = 'Login successful!';
-  console.log(result);
+          if (response.ok) {
+            message.style.color = 'green';
+            message.textContent = 'Login successful!';
+            console.log(result);
 
-  localStorage.setItem('token', result.token);
+            localStorage.setItem('token', result.token);
 
-  fetch(home, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${result.token}`
-    }
-  })
-  .then(() => {
-    console.log("Redirecting to home...");
-    window.location.href = home;
-  })
-  .catch(err => {
-    console.error('Authorization failed:', err);
-    message.style.color = 'red';
-    message.textContent = 'Unauthorized access';
-  });
+            fetch(home, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${result.token}`
+              }
+            })
+              .then(() => {
+                console.log("Redirecting to home...");
+                window.location.href = home;
+              })
+              .catch(err => {
+                console.error('Authorization failed:', err);
+                message.style.color = 'red';
+                message.textContent = 'Unauthorized access';
+              });
 
-        } else {
-          message.style.color = 'red';
-          message.textContent = result.error || 'Login failed';
+          } else {
+            message.style.color = 'red';
+            message.textContent = result.error || 'Login failed';
+          }
+        } catch (err) {
+          message.textContent = 'Something went wrong. Please try again.';
+          console.error(err);
         }
-      } catch (err) {
-        message.textContent = 'Something went wrong. Please try again.';
-        console.error(err);
-      }
-    });
+      });
   </script>
 
 </body>

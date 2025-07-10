@@ -11,7 +11,7 @@
   <div class="container">
     <h2 id="quiz-title">Loading...</h2>
     <form id="quiz-form">
-      <div id="timer">Time Left: 60s</div>
+      <div id="timer">Time Left: 15s</div>
 
       <div id="questions-container"></div>
       <button type="submit" class="start-btn">Submit Answers</button>
@@ -26,11 +26,11 @@
     const quizId = window.location.pathname.split('/').pop();
     let correctAnswers = [];
     const answers = [];
-    let timeLeft = 60; // seconds
+    let timeLeft = 15; // seconds
     const timerElement = document.getElementById('timer');
     document.getElementById('home-btn').addEventListener('click', () => {
     window.location.href = '/';
-});
+  });
   const countdown = setInterval(() => {
   timeLeft--;
   timerElement.textContent = `Time Left: ${timeLeft}s`;

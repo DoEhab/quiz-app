@@ -1,12 +1,24 @@
+import hashlib
+
 import jwt
 import datetime
 import os
 from flask import request, jsonify, url_for, redirect
 from functools import wraps
+
 """
 handling JWT token
 """
 SECRET_KEY = os.getenv("SECRET_KEY", "default_key")
+
+
+def hash_pass(password):
+    """
+    unified password hashing function
+    :param password: plain text password
+    :return: hashed password
+    """
+    return hashlib.sha1(password.encode()).hexdigest()
 
 
 def generate_token(user_id):

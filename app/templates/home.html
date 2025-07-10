@@ -25,65 +25,64 @@
         'Authorization': `Bearer ${token}`
       }
     })
-    .then(res => {
-      if (!res.ok) throw new Error('Unauthorized');
-      return res.json();
-    })
-    .then(data => {
-    allQuizzes = data;
-    const list = document.getElementById('quiz-list');
-    data.forEach(quiz => {
-    const card = document.createElement('div');
-    card.classList.add('quiz-card');
+      .then(res => {
+        if (!res.ok) throw new Error('Unauthorized');
+        return res.json();
+      })
+      .then(data => {
+        allQuizzes = data;
+        const list = document.getElementById('quiz-list');
+        data.forEach(quiz => {
+          const card = document.createElement('div');
+          card.classList.add('quiz-card');
 
-    const scoreText = quiz.score !== null
-  ? `Score: ${quiz.score}/${quiz.total} • ${quiz.date}`
-  : `Not taken yet`;
+          const scoreText = quiz.score !== null
+            ? `Score: ${quiz.score}/${quiz.total} • ${quiz.date}`
+            : `Not taken yet`;
 
-card.innerHTML = `
-  <div class="quiz-header">
+          card.innerHTML = `
+    <div class="quiz-header">
     <div>
       <div class="quiz-title">${quiz.title}</div>
       <div class="quiz-topic">${quiz.topic}</div>
     </div>
     <div class="quiz-meta">${scoreText}</div>
-  </div>
-  <a href="/quiz/${quiz._id}" class="start-btn">Start Quiz</a>
-`;
-    list.appendChild(card);
-  });
-})
+    </div>
+    <a href="/quiz/${quiz._id}" class="start-btn">Start Quiz</a>
+    `;
+          list.appendChild(card);
+        });
+      })
 
-    .catch(err => {
-      console.error('Error fetching quizzes:', err);
-      window.location.href = loginUrl;
-    });
+      .catch(err => {
+        console.error('Error fetching quizzes:', err);
+        window.location.href = loginUrl;
+      });
     function renderQuizzes(quizzes) {
-  const list = document.getElementById('quiz-list');
-  list.innerHTML = '';
-  quizzes.forEach(quiz => {
-    const card = document.createElement('div');
-    card.classList.add('quiz-card');
-    card.innerHTML = `
+      const list = document.getElementById('quiz-list');
+      list.innerHTML = '';
+      quizzes.forEach(quiz => {
+        const card = document.createElement('div');
+        card.classList.add('quiz-card');
+        card.innerHTML = `
       <div class="quiz-header">
         <div class="quiz-title">${quiz.title}</div>
         <div class="quiz-topic">Topic: ${quiz.topic}</div>
       </div>
       <a href="/quiz/${quiz._id}" class="start-btn">Start Quiz</a>
     `;
-    list.appendChild(card);
-  });
-}
+        list.appendChild(card);
+      });
+    }
 
-document.getElementById('search-input').addEventListener('input', (e) => {
-  const keyword = e.target.value.toLowerCase();
-  const filtered = allQuizzes.filter(quiz =>
-    quiz.title.toLowerCase().includes(keyword) ||
-    quiz.topic.toLowerCase().includes(keyword)
-  );
-  renderQuizzes(filtered);
-});
-
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      const keyword = e.target.value.toLowerCase();
+      const filtered = allQuizzes.filter(quiz =>
+        quiz.title.toLowerCase().includes(keyword) ||
+        quiz.topic.toLowerCase().includes(keyword)
+      );
+      renderQuizzes(filtered);
+    });
   </script>
 </body>
 
